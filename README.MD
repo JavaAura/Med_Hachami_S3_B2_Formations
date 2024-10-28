@@ -6,8 +6,6 @@ This project is a REST API for managing the operations of a training center, inc
 - [Project Overview](#project-overview)
 - [Installation](#installation)
 - [Technologies Used](#technologies-used)
-- [Deployment Instructions](#deployment-instructions)
-
 ---
 
 ## Project Overview
@@ -36,7 +34,7 @@ A training center seeks to digitalize its processes by creating an API that faci
 
 ## Installation
 
-### Prerequisites
+**Prerequisites**
 - **Java 8** or higher
 - **Maven** for build management
 - **PostgreSQL** for production or **H2 Database** for development
@@ -49,45 +47,61 @@ A training center seeks to digitalize its processes by creating an API that faci
    cd Med_Hachami_S3_B2_Formations
 
 2. **Setup the Project**:
- Setup environment variable
+Setup environment variable
+
+1. **Windows:**
+   ```cmd
+    set DB_URL= "database url"
+   set DB_USER= "username"
+   set DB_PASSWORD = "password"
+
+2. **Compile the application:**
 
 **For windows:**
-   ```cmd
+   ```sh
    set DB_URL= "database url"
    set DB_USER= "username"
    set DB_PASSWORD = "password"
+  ```
 
 **For linux based:**
    ```bash
    export DB_URL= "database url"
    export DB_USER= "username"
    export DB_PASSWORD = "password"
+  ```
 
 3. **Build the Project**:
    ```bash
     mvn clean install
 
-4. **Ru**:
+4. **Ten the application**:
+```bash
+mvn test
+```
 
-2.3 Run the Application:
-    For Development Profile:
+5. **Run the application**:
 
-bash
-
+**4. Run the Application:**
+***4.1. DEV profile:***
+```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
-
-    For Production Profile:
-
-bash
-
+```
+***4.2. Prod profile:***
+```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=prod
+```
+
+
+
+
 
 
 
 
 #### Technologies Used
 
-### Backend
+### Technologies Used
 
 - **Spring Boot**
   - Project initialized with Spring Initializer.
