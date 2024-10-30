@@ -26,20 +26,14 @@ public class GroupServiceImpl implements GroupService {
 
 
     @Override
-    public boolean addGroup(Group group) {
-        boolean result = false;
-        if(groupRepository.existsByName(group.getName())){
-            throw new DuplicateResourceException("Group with name " + group.getName() + " already exists");
-        }
+    public Group addGroup(Group group) {
         try {
-            this.groupRepository.save(group);
-            result = true;
+            return this.groupRepository.save(group);
         } catch (Exception e) {
             logger.error("Error in adding group", e);
             throw new DatabaseOperationException("Failed to add group to the database", e);
         }
 
-        return result;
     }
 
     @Override
@@ -54,17 +48,20 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void update(Group group) {
+    public Group update(Group group) {
         if (group.getId() == null) {
             throw new InvalidDataException("Group ID cannot be null for update operation");
         }
 
-        if (!groupRepository.existsById(group.getId())) {
-            throw new ResourceNotFoundException("Group with ID " + group.getId() + " not found for update");
-        }
+        Group existingGroup = groupRepository.findById(group.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found with id " + group.getId()));
+
+        existingGroup.setName(group.getName());
+        existingGroup.setRoomNumber(group.getRoomNumber());
+
 
         try {
-            groupRepository.save(group);
+           return groupRepository.save(existingGroup);
         } catch (Exception e) {
             throw new DatabaseOperationException("Failed to update group with ID " + group.getId(), e);
         }

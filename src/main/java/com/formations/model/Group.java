@@ -2,27 +2,28 @@ package com.formations.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "group")
+@Table(name = "\"groups\"")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class Group {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank(message = "name should not be null")
+    @NotEmpty(message = "name should not be null")
     @Size(min = 2, max = 50 ,message = "Name should be bewtween 2 and 50 characters")
     private String name;
 
-    @NotBlank
+    @NotEmpty(message = "Room number should not be null")
     private String roomNumber;
 
 

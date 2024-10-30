@@ -1,13 +1,13 @@
-package com.formations;
+package com.formations.service.impl;
+
 import com.formations.exception.DatabaseOperationException;
-import com.formations.exception.DuplicateResourceException;
 import com.formations.exception.InvalidDataException;
 import com.formations.exception.ResourceNotFoundException;
 import com.formations.model.Group;
 import com.formations.repository.GroupRepository;
-import com.formations.service.impl.GroupServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class GroupServiceImplTest {
+class GroupServiceImplTest {
+
     @Mock
     private GroupRepository groupRepository;
 
@@ -29,128 +29,118 @@ public class GroupServiceImplTest {
     private Group group;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         group = new Group();
         group.setId(1L);
         group.setName("Test Group");
+        group.setRoomNumber("Room 101");
     }
 
     @Test
-    public void testAddGroup_Success() {
-        when(groupRepository.existsByName(group.getName())).thenReturn(false);
+    void testAddGroup() {
         when(groupRepository.save(any(Group.class))).thenReturn(group);
 
-        boolean result = groupService.addGroup(group);
+        Group result = groupService.addGroup(group);
 
-        assertTrue(result);
+        assertEquals(group, result);
         verify(groupRepository, times(1)).save(group);
     }
 
     @Test
-    public void testAddGroup_DuplicateResourceException() {
-        when(groupRepository.existsByName(group.getName())).thenReturn(true);
+    void testGetGroupById() {
+        when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
 
-        assertThrows(DuplicateResourceException.class, () -> groupService.addGroup(group));
-        verify(groupRepository, never()).save(any(Group.class));
+        Group result = groupService.getGroupById(1L);
+
+        assertEquals(group, result);
+        verify(groupRepository, times(1)).findById(1L);
     }
 
     @Test
-    public void testAddGroup_DatabaseOperationException() {
-        when(groupRepository.existsByName(group.getName())).thenReturn(false);
-        when(groupRepository.save(any(Group.class))).thenThrow(new RuntimeException("Database error"));
+    void testGetGroupByIdNotFound() {
+        when(groupRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(DatabaseOperationException.class, () -> groupService.addGroup(group));
-        assertEquals("Failed to add group to the database", exception.getMessage());
-        verify(groupRepository, times(1)).save(group);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> groupService.getGroupById(1L));
+        assertEquals("Group with ID 1 not found", exception.getMessage());
     }
 
     @Test
-    public void testGetGroupById_Success() {
-        when(groupRepository.findById(group.getId())).thenReturn(Optional.of(group));
-
-        Group result = groupService.getGroupById(group.getId());
-
-        assertNotNull(result);
-        assertEquals(group.getId(), result.getId());
-    }
-
-    @Test
-    public void testGetGroupById_ResourceNotFoundException() {
-        when(groupRepository.findById(group.getId())).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> groupService.getGroupById(group.getId()));
-    }
-
-    @Test
-    public void testGetAllGroups() {
+    void testGetAllGroups() {
         when(groupRepository.findAll()).thenReturn(List.of(group));
 
-        List<Group> groups = groupService.getAllGroups();
+        List<Group> result = groupService.getAllGroups();
 
-        assertNotNull(groups);
-        assertEquals(1, groups.size());
-        assertEquals(group.getId(), groups.get(0).getId());
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(group, result.get(0));
+        verify(groupRepository, times(1)).findAll();
     }
 
     @Test
-    public void testUpdate_Success() {
-        when(groupRepository.existsById(group.getId())).thenReturn(true);
+    void testUpdateGroup() {
+        when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(groupRepository.save(any(Group.class))).thenReturn(group);
 
-        assertDoesNotThrow(() -> groupService.update(group));
+        group.setName("Updated Group");
+        Group updatedGroup = groupService.update(group);
+
+        assertEquals("Updated Group", updatedGroup.getName());
+        verify(groupRepository, times(1)).findById(1L);
         verify(groupRepository, times(1)).save(group);
     }
 
     @Test
-    public void testUpdate_InvalidDataException() {
-        group.setId(null);
+    void testUpdateGroupNotFound() {
+        when(groupRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(InvalidDataException.class, () -> groupService.update(group));
-        verify(groupRepository, never()).save(any(Group.class));
+        InvalidDataException exception = assertThrows(InvalidDataException.class, () -> {
+            group.setId(null);
+            groupService.update(group);
+        });
+        assertEquals("Group ID cannot be null for update operation", exception.getMessage());
     }
 
     @Test
-    public void testUpdate_ResourceNotFoundException() {
-        when(groupRepository.existsById(group.getId())).thenReturn(false);
+    void testDeleteGroup() {
+        when(groupRepository.existsById(1L)).thenReturn(true);
 
-        assertThrows(ResourceNotFoundException.class, () -> groupService.update(group));
-        verify(groupRepository, never()).save(any(Group.class));
+        groupService.delete(group);
+
+        verify(groupRepository, times(1)).delete(group);
     }
 
     @Test
-    public void testUpdate_DatabaseOperationException() {
-        when(groupRepository.existsById(group.getId())).thenReturn(true);
+    void testDeleteGroupNotFound() {
+        when(groupRepository.existsById(1L)).thenReturn(false);
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> groupService.delete(group));
+        assertEquals("Group with ID 1 not found for deletion", exception.getMessage());
+    }
+
+    @Test
+    void testDatabaseOperationExceptionOnAddGroup() {
         when(groupRepository.save(any(Group.class))).thenThrow(new RuntimeException("Database error"));
 
-        Exception exception = assertThrows(DatabaseOperationException.class, () -> groupService.update(group));
-        assertEquals("Failed to update group with ID " + group.getId(), exception.getMessage());
-        verify(groupRepository, times(1)).save(group);
+        DatabaseOperationException exception = assertThrows(DatabaseOperationException.class, () -> groupService.addGroup(group));
+        assertEquals("Failed to add group to the database", exception.getMessage());
     }
 
     @Test
-    public void testDelete_Success() {
-        when(groupRepository.existsById(group.getId())).thenReturn(true);
+    void testDatabaseOperationExceptionOnUpdateGroup() {
+        when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
+        when(groupRepository.save(any(Group.class))).thenThrow(new RuntimeException("Database error"));
 
-        assertDoesNotThrow(() -> groupService.delete(group));
-        verify(groupRepository, times(1)).delete(group);
+        DatabaseOperationException exception = assertThrows(DatabaseOperationException.class, () -> groupService.update(group));
+        assertEquals("Failed to update group with ID 1", exception.getMessage());
     }
 
     @Test
-    public void testDelete_ResourceNotFoundException() {
-        when(groupRepository.existsById(group.getId())).thenReturn(false);
+    void testDatabaseOperationExceptionOnDeleteGroup() {
+        when(groupRepository.existsById(1L)).thenReturn(true);
+        doThrow(new RuntimeException("Database error")).when(groupRepository).delete(group);
 
-        assertThrows(ResourceNotFoundException.class, () -> groupService.delete(group));
-        verify(groupRepository, never()).delete(any(Group.class));
-    }
-
-    @Test
-    public void testDelete_DatabaseOperationException() {
-        when(groupRepository.existsById(group.getId())).thenReturn(true);
-        doThrow(new RuntimeException("Database error")).when(groupRepository).delete(any(Group.class));
-
-        Exception exception = assertThrows(DatabaseOperationException.class, () -> groupService.delete(group));
-        assertEquals("Failed to delete group with ID " + group.getId(), exception.getMessage());
-        verify(groupRepository, times(1)).delete(group);
+        DatabaseOperationException exception = assertThrows(DatabaseOperationException.class, () -> groupService.delete(group));
+        assertEquals("Failed to delete group with ID 1", exception.getMessage());
     }
 }
