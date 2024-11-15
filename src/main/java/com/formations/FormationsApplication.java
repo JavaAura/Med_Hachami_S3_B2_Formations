@@ -6,11 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.formations")
 public class FormationsApplication {
 
 	public static void main(String[] args) {
-        
+
 		SpringApplication.run(FormationsApplication.class, args);
 	}
 
