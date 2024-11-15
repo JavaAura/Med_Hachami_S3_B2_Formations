@@ -1,4 +1,4 @@
-package com.formations.exception;
+package com.formations.exception.business;
 
 public class DuplicateResourceException extends RuntimeException  {
     public DuplicateResourceException(String message) {
