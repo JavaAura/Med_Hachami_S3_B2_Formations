@@ -14,17 +14,19 @@ import java.io.Serializable;
 @Table(name = "trainer")
 public class Trainer extends Person implements Serializable {
 
+
+
     @NotBlank(message = "specialty should not be null")
     private String specialty;
 
-    @Getter
-    @Setter
+
+
     @ManyToOne
     @JoinColumn(name = "training_id")
     private Training training;
 
-    @Getter
-    @Setter
+
+
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
@@ -43,11 +45,33 @@ public class Trainer extends Person implements Serializable {
         this.specialty = specialty;
     }
 
+
     public @NotBlank(message = "specialty should not be null") String getSpecialty() {
         return specialty;
+    }
+
+    public Training getTraining() {
+        return training;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+
+    public void setTraining(Training training) {
+        this.training = training;
     }
 
     public void setSpecialty(@NotBlank(message = "specialty should not be null") String specialty) {
         this.specialty = specialty;
     }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+
+
+
 }
