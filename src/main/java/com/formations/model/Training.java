@@ -2,9 +2,7 @@ package com.formations.model;
 
 import com.formations.model.enums.TrainingStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +13,10 @@ import java.util.List;
 @Table(name = "training")
 public class Training {
 
-    @Getter
-    @Id
+
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
 
@@ -28,13 +27,13 @@ public class Training {
     @NotBlank(message = "level can not be null")
     private String level;
 
-    @NotBlank(message = "prerequisites can not be null")
+    @NotNull(message = "prerequisites can not be null")
     private String prerequisites;
 
-    @NotBlank(message = "minCapacity can not be null")
+    @Min(message = "Minimum capacity cannot be null", value = 10L)
     private int minCapacity;
 
-    @NotBlank(message = "maxCapacity can not be null")
+    @Max(message = "Maximum capacity cannot be null", value = 30L)
     private int maxCapacity;
 
     @Future(message = "Date must be in future")
@@ -45,22 +44,20 @@ public class Training {
     @Column(name = "endDate", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDate endDate;
 
-    @Setter
-    @Getter
+
     @Enumerated(EnumType.STRING)
     private TrainingStatus status;
 
 
-    @Setter
-    @Getter
     @ManyToOne
-    @JoinColumn(name = "trainer_id")
+    @JoinColumn(name = "trainer_id", referencedColumnName = "id")
     private Trainer trainer;
 
-    @Setter
-    @Getter
+
     @OneToMany
     private List<Learner> learners;
+
+    public Training(){}
 
     public @Size(min = 5, max = 150, message = "Name should be bewtween 5 and 150 characters") @NotBlank(message = "title can not be null") String getTitle() {
         return title;
@@ -74,12 +71,12 @@ public class Training {
         return prerequisites;
     }
 
-    @NotBlank(message = "minCapacity can not be null")
+    @NotNull(message = "minCapacity can not be null")
     public int getMinCapacity() {
         return minCapacity;
     }
 
-    @NotBlank(message = "maxCapacity can not be null")
+    @NotNull(message = "maxCapacity can not be null")
     public int getMaxCapacity() {
         return maxCapacity;
     }
@@ -100,11 +97,11 @@ public class Training {
         this.startDate = startDate;
     }
 
-    public void setMaxCapacity(@NotBlank(message = "maxCapacity can not be null") int maxCapacity) {
+    public void setMaxCapacity(@NotNull(message = "maxCapacity can not be null") int maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
 
-    public void setMinCapacity(@NotBlank(message = "minCapacity can not be null") int minCapacity) {
+    public void setMinCapacity(@NotNull(message = "minCapacity can not be null") int minCapacity) {
         this.minCapacity = minCapacity;
     }
 
@@ -120,5 +117,37 @@ public class Training {
         this.title = title;
     }
 
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setStatus(TrainingStatus status) {
+        this.status = status;
+    }
+
+    public void setLearners(List<Learner> learners) {
+        this.learners = learners;
+    }
+
+
+
+    public Trainer getTrainer() {
+        return trainer;
+    }
+
+    public TrainingStatus getStatus() {
+        return status;
+    }
+
+    public List<Learner> getLearners() {
+        return learners;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }
