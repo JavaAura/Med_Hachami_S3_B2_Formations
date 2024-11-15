@@ -60,10 +60,10 @@ public class LearnerServiceImpl implements LearnerService {
     public List<LearnerDto> getAllLearners() {
         List<Learner> learners = learnerRepository.findAll();
         if (learners.isEmpty()) {
+
             throw new ResourceNotFoundException("No learners found");
         }
         return learners.stream().map(l->LearnerMapper.learnerMapper.toDto(l)).collect(Collectors.toList());
-
     }
 
     @Override
