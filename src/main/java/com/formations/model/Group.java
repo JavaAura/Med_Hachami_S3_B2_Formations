@@ -10,13 +10,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "\"groups\"")
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
 public class Group {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty(message = "name should not be null")
@@ -25,6 +22,30 @@ public class Group {
 
     @NotEmpty(message = "Room number should not be null")
     private String roomNumber;
+
+    public Long getId(){
+        return this.id;
+    }
+
+    public void setId(Long id){
+        this.id = id;
+    }
+
+    public @NotEmpty(message = "name should not be null") @Size(min = 2, max = 50, message = "Name should be bewtween 2 and 50 characters") String getName() {
+        return name;
+    }
+
+    public void setName(@NotEmpty(message = "name should not be null") @Size(min = 2, max = 50, message = "Name should be bewtween 2 and 50 characters") String name) {
+        this.name = name;
+    }
+
+    public void setRoomNumber(@NotEmpty(message = "Room number should not be null") String roomNumber) {
+        this.roomNumber = roomNumber;
+    }
+
+    public @NotEmpty(message = "Room number should not be null") String getRoomNumber() {
+        return roomNumber;
+    }
 
 
 }

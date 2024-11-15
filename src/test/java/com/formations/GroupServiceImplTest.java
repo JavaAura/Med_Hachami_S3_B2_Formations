@@ -1,13 +1,12 @@
 package com.formations.service.impl;
 
-import com.formations.exception.DatabaseOperationException;
-import com.formations.exception.InvalidDataException;
-import com.formations.exception.ResourceNotFoundException;
+import com.formations.exception.business.DatabaseOperationException;
+import com.formations.exception.business.InvalidDataException;
+import com.formations.exception.business.ResourceNotFoundException;
 import com.formations.model.Group;
 import com.formations.repository.GroupRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

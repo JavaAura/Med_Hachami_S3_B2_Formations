@@ -1,6 +1,6 @@
 package com.formations.controller;
 
-import com.formations.exception.ResourceNotFoundException;
+import com.formations.exception.business.ResourceNotFoundException;
 import com.formations.model.Group;
 import com.formations.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/group")
+@RequestMapping("/api/v1/group")
 public class GroupController {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupController.class);
@@ -75,7 +75,7 @@ public class GroupController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdGroup);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     @Operation(summary = "Update an existing group", description = "Updates the details of a group")
     @ApiResponse(responseCode = "200", description = "Group updated successfully",
             content = @Content(mediaType = "application/json",
